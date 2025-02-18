@@ -3,7 +3,7 @@ import { Draggable } from "@/components";
 </script>
 
 <template>
-  <main>
+  <section class="p-8">
     <Draggable />
-  </main>
+  </section>
 </template>
