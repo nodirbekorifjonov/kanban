@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { db } from "@/firebase";
 import { PlusOutlined, MoreOutlined } from "@ant-design/icons-vue";
 import { h, reactive, ref } from "vue";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 
 interface Task {
   id: number;
@@ -16,39 +18,24 @@ interface Column {
   color: string;
 }
 
-const columns = reactive<Column[]>([
-  {
-    id: 1,
-    title: "To Do",
-    tasks: [
-      {
-        id: 101,
-        title: "Vue.js o‘rganish",
-        description: "Lorem ipsum dolor set",
-        importance: "Important",
-      },
-      {
-        id: 102,
-        title: "Kanban loyihasini tugatish",
-        description: "Lorem ipsum dolor set",
-        importance: "Important",
-      },
-    ],
-    color: "#4F46E5",
-  },
-  {
-    id: 2,
-    title: "In Progress",
-    tasks: [],
-    color: "#F59E0B",
-  },
-  {
-    id: 3,
-    title: "Completed",
-    tasks: [],
-    color: "#22C55E",
-  },
-]);
+const columns = reactive<Column[]>([]);
+
+// Columns ma'lumotlarini olish
+const fetchColumns = async () => {
+  const querySnapshot = await getDocs(collection(db, "columns"));
+  const columnsData = querySnapshot.docs.map((doc) => doc.data());
+
+  columnsData.forEach((column: any) => {
+    columns.push({
+      id: column.id,
+      title: column.title,
+      tasks: column.tasks || [],
+      color: column.color || "#f8fafc",
+    });
+  });
+};
+
+fetchColumns();
 
 let draggedTask = ref<Task | null>(null);
 let draggedColumnIndex = ref<number | null>(null);
@@ -134,46 +121,4 @@ function onDrop(targetColumnIndex: number) {
   </div>
 </template>
 
-<style scoped>
-/* .kanban-board {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-.kanban-column {
-  flex: 1;
-  background: #f3f4f6;
-  border-radius: 12px;
-  padding: 10px;
-  margin: 0 10px;
-  min-height: 250px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s;
-}
-
-.kanban-column h3 {
-  text-align: center;
-  font-weight: bold;
-  color: #4b5563;
-  margin-bottom: 12px;
-}
-
-.kanban-item {
-  padding: 10px;
-  margin-bottom: 8px;
-  background: #e5e7eb;
-  border-radius: 6px;
-  cursor: grab;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.kanban-item:active {
-  cursor: grabbing;
-}
-
-.kanban-item:hover {
-  background: #d1d5db;
-  transform: scale(1.03);
-} */
-</style>
+<style scoped></style>
