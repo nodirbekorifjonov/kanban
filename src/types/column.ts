@@ -1,8 +1,8 @@
 import type { Task } from "./task";
 
 export interface Column {
-    id: number;
+    $id: string;
     title: string;
-    tasks: Task[];
+    tasks: Task[] | [];
     color: string;
 }

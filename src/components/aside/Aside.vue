@@ -16,7 +16,6 @@ import { RouterLink } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 import { useAsideStore } from "@/stores/aside";
-import { onMounted } from "vue";
 
 const asideStore = useAsideStore();
 const authStore = useAuthStore();
@@ -65,11 +64,6 @@ const menuData = [
     id: "help",
   },
 ];
-
-onMounted(() => {
-  authStore.getUser();
-  console.log(authStore.userData);
-});
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "Control" && e.shiftKey) {

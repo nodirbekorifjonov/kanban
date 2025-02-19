@@ -6,56 +6,49 @@ import { ref } from "vue";
 interface User {
     $id: string;
     email: string;
-    name?: string; // name ba'zi holatlarda bo'lmasligi mumkin
+    name?: string;
 }
 
 export const useAuthStore = defineStore("auth", () => {
     const isLoading = ref<boolean>(false);
-    const userData = ref<User | null>(null); // `reactive` emas, `ref`
+    const userData = ref<User | null>(null);
 
-    async function register(email: string, password: string, name: string) {
+    // Registration with email, password and username
+    async function register(email: string, password: string, name: string): Promise<void> {
         try {
-            const user = await ACCOUNT.create("unique()", email, password, name);
-            userData.value = user; // ✅ `values` emas, `value` ishlatish kerak
+            await ACCOUNT.create("unique()", email, password, name);
             await login(email, password)
             router.push("/");
-            return user;
         } catch (error) {
             console.error("Xatolik:", error);
         }
     }
 
+    // Login with email and password
     async function login(email: string, password: string) {
         try {
-            const session = await ACCOUNT.createEmailPasswordSession(email, password);
-            console.log("Muvaffaqiyatli", session);
-
-            await getUser(); // ✅ Login qilgandan keyin userni yuklab olish
-
+            await ACCOUNT.createEmailPasswordSession(email, password);
+            await getUser();
             router.push("/");
         } catch (error) {
             console.log("Login xatolik:", error);
         }
     }
-
+    // Get User informations
     async function getUser(): Promise<void> {
-        isLoading.value = true;
         try {
-            const user = await ACCOUNT.get(); // ✅ getAccount() emas, get() ishlatish kerak
-            userData.value = user;
-            console.log("User ma’lumotlari:", user);
+            userData.value = await ACCOUNT.get();
+
+
         } catch (error) {
             console.error("Foydalanuvchini olishda xatolik:", error);
-            userData.value = null; // ✅ Xatolik bo‘lsa, userData-ni null qilish
-        } finally {
-            isLoading.value = false;
         }
     }
-
+    // Log out from app
     async function logout(): Promise<void> {
         try {
             await ACCOUNT.deleteSession("current");
-            userData.value = null; // ✅ Logout qilganda userni tozalash
+            userData.value = null;
             router.push("/login");
         } catch (error) {
             console.error("Chiqishda xatolik:", error);

@@ -1,25 +1,28 @@
-import { reactive, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
-import { collection, getDocs, updateDoc } from 'firebase/firestore';
-import { db } from '@/firebase';
 import type { Column } from '@/types/column';
+import { COLUMNS, DATABASE_ID } from '@/constants';
+import { DATABASE } from '@/libs/appwrite';
 
 export const useColumnsStore = defineStore('columns', () => {
-    const columns = reactive<Column[]>([]);
+    let columns = reactive<Column[]>([]);
+    // let columns = ref<object>({})
     async function fetchColumns() {
-        const querySnapshot = await getDocs(collection(db, "columns"));
-        const columnsData = querySnapshot.docs.map((doc) => doc.data());
-
-        columnsData.forEach((column: any) => {
-            columns.push({
-                id: column.id,
-                title: column.title,
-                tasks: column.tasks || [],
-                color: column.color || "#f8fafc",
+        try {
+            const { documents } = await DATABASE.listDocuments(DATABASE_ID, COLUMNS);
+            documents.map((column: any) => {
+                columns.push({
+                    $id: column.id,
+                    title: column.title,
+                    tasks: column.tasks || [],
+                    color: column.color || "#f8fafc",
+                });
             });
-        });
+            console.log(documents);
+        } catch (error) {
+            console.log(error);
 
-        console.log(columnsData);
+        }
     };
 
     return { columns, fetchColumns }

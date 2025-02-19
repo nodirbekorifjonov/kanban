@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { Aside, Header } from "./components";
+import { useAuthStore } from "./stores/auth";
+import { onMounted } from "vue";
+
+onMounted(() => {
+  useAuthStore().getUser();
+});
 </script>
 
 <template>

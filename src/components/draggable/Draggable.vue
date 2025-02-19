@@ -7,6 +7,10 @@ import { useColumnsStore } from "@/stores/columns";
 
 const columnsStore = useColumnsStore();
 
+// onMounted(() => {
+//   getData();
+// });
+
 let draggedTask = ref<Task | null>(null);
 let draggedColumnIndex = ref<number | null>(null);
 let draggedTaskIndex = ref<number | null>(null);
@@ -27,23 +31,23 @@ function onDrop(targetColumnIndex: number) {
       draggedTaskIndex.value,
       1
     );
-    columnsStore.columns[targetColumnIndex].tasks.push(draggedTask.value);
+    // columnsStore.columns[targetColumnIndex].tasks.push(draggedTask.value);
     draggedTask.value = null;
     draggedColumnIndex.value = null;
     draggedTaskIndex.value = null;
   }
 }
 
-// onMounted(() => {
-//   columnsStore.fetchColumns();
-// });
+onMounted(() => {
+  columnsStore.fetchColumns();
+});
 </script>
 
 <template>
   <div class="kanban-board flex gap-4 overflow-x-auto">
     <div
       v-for="(column, columnIndex) in columnsStore.columns"
-      :key="column.id"
+      :key="column.$id"
       class="w-[344px] p-3 bg-[#f8fafc] rounded-4xl shrink-0 flex flex-col gap-4"
       @dragover.prevent
       @drop="onDrop(columnIndex)"
@@ -71,7 +75,7 @@ function onDrop(targetColumnIndex: number) {
       </div>
       <div
         v-for="(task, taskIndex) in column.tasks"
-        :key="task.id"
+        :key="task.$id"
         draggable="true"
         @dragstart="onDragStart(task, columnIndex, taskIndex)"
         class="bg-[#fff] p-3 rounded-3xl"
