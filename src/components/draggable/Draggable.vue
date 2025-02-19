@@ -1,41 +1,11 @@
 <script setup lang="ts">
-import { db } from "@/firebase";
 import { PlusOutlined, MoreOutlined } from "@ant-design/icons-vue";
-import { h, reactive, ref } from "vue";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { h, onMounted, ref } from "vue";
+import type { Task } from "@/types/task";
 
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  importance: string;
-}
+import { useColumnsStore } from "@/stores/columns";
 
-interface Column {
-  id: number;
-  title: string;
-  tasks: Task[];
-  color: string;
-}
-
-const columns = reactive<Column[]>([]);
-
-// Columns ma'lumotlarini olish
-const fetchColumns = async () => {
-  const querySnapshot = await getDocs(collection(db, "columns"));
-  const columnsData = querySnapshot.docs.map((doc) => doc.data());
-
-  columnsData.forEach((column: any) => {
-    columns.push({
-      id: column.id,
-      title: column.title,
-      tasks: column.tasks || [],
-      color: column.color || "#f8fafc",
-    });
-  });
-};
-
-fetchColumns();
+const columnsStore = useColumnsStore();
 
 let draggedTask = ref<Task | null>(null);
 let draggedColumnIndex = ref<number | null>(null);
@@ -53,19 +23,26 @@ function onDrop(targetColumnIndex: number) {
     draggedColumnIndex.value !== null &&
     draggedTaskIndex.value !== null
   ) {
-    columns[draggedColumnIndex.value].tasks.splice(draggedTaskIndex.value, 1);
-    columns[targetColumnIndex].tasks.push(draggedTask.value);
+    columnsStore.columns[draggedColumnIndex.value].tasks.splice(
+      draggedTaskIndex.value,
+      1
+    );
+    columnsStore.columns[targetColumnIndex].tasks.push(draggedTask.value);
     draggedTask.value = null;
     draggedColumnIndex.value = null;
     draggedTaskIndex.value = null;
   }
 }
+
+// onMounted(() => {
+//   columnsStore.fetchColumns();
+// });
 </script>
 
 <template>
   <div class="kanban-board flex gap-4 overflow-x-auto">
     <div
-      v-for="(column, columnIndex) in columns"
+      v-for="(column, columnIndex) in columnsStore.columns"
       :key="column.id"
       class="w-[344px] p-3 bg-[#f8fafc] rounded-4xl shrink-0 flex flex-col gap-4"
       @dragover.prevent

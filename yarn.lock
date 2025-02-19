@@ -1409,6 +1409,11 @@ ant-design-vue@^4.2.6:
     vue-types "^3.0.0"
     warning "^4.0.0"
 
+appwrite@^17.0.0:
+  version "17.0.0"
+  resolved "https://registry.yarnpkg.com/appwrite/-/appwrite-17.0.0.tgz#228603775931ceb52f9c3f9ddc39104300b54b77"
+  integrity sha512-R5+jMh6dVsKC5BdcO9G3wQPxqlU048zxj/Hahq2SU86XIxb0jWThQqS7MtyLUg7tz27SrwO2JvpwUrT9SOStDA==
+
 array-tree-filter@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/array-tree-filter/-/array-tree-filter-2.1.0.tgz#873ac00fec83749f255ac8dd083814b4f6329190"

@@ -12,12 +12,14 @@ import {
   CloseOutlined,
   LogoutOutlined,
 } from "@ant-design/icons-vue";
-import { ref } from "vue";
 import { RouterLink } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 import { useAsideStore } from "@/stores/aside";
+import { onMounted } from "vue";
 
-const asideStore = useAsideStore()
+const asideStore = useAsideStore();
+const authStore = useAuthStore();
 
 const menuData = [
   {
@@ -64,21 +66,29 @@ const menuData = [
   },
 ];
 
-
-window.addEventListener('keydown', (e) => {
-  if (e.key === "Control" && e.shiftKey) {
-    asideStore.showAside = !asideStore.showAside;
-  }  
+onMounted(() => {
+  authStore.getUser();
+  console.log(authStore.userData);
 });
 
-window.addEventListener('resize', () => {
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Control" && e.shiftKey) {
+    asideStore.showAside = !asideStore.showAside;
+  }
+});
+
+window.addEventListener("resize", () => {
   asideStore.showAside = window.innerWidth > 768;
 });
 </script>
 
 <template>
   <div
-    class="w-[312px] py-8 px-4 flex flex-col justify-between h-screen overflow-y-auto gap-[52px] bg-[#fff] border-r border-[#E2E8F0] transition " :class="!asideStore.showAside && 'max-[768px]:translate-x-[100%] max-[768px]:opacity-0'"
+    class="w-[312px] py-8 px-4 flex flex-col justify-between h-screen overflow-y-auto gap-[52px] bg-[#fff] border-r border-[#E2E8F0] transition"
+    :class="
+      !asideStore.showAside &&
+      'max-[768px]:translate-x-[100%] max-[768px]:opacity-0'
+    "
   >
     <div class="flex flex-col gap-8">
       <!-- Logo -->
@@ -138,22 +148,34 @@ window.addEventListener('resize', () => {
           <a-button type="link" class="font-plusjakarta-bold!">Go Pro</a-button>
         </div>
       </div>
-      <div class="flex items-center gap-3 border-t pt-6 border-[#E2E8F0]">
+      <div
+        v-if="authStore.userData"
+        class="flex items-center gap-3 border-t pt-6 border-[#E2E8F0]"
+      >
         <a-avatar class="flex! justify-center! items-center!">
           <template #icon><UserOutlined /></template>
         </a-avatar>
         <div class="">
-          <h4 class="font-plusjakarta-bold text-[#1E293B]!">Azunyan U. Wu</h4>
+          <h4 class="font-plusjakarta-bold text-[#1E293B]!">
+            {{ authStore.userData.name }}
+          </h4>
           <p class="font-plusjakarta-semibold text-sm text-[#475569]">
-            Basic Member
+            {{ authStore.userData.email }}
           </p>
         </div>
         <a-button
           type="text"
           shape="circle"
           class="flex! justify-center! items-center! ml-auto text-xl!"
+          @click="authStore.logout()"
           ><LogoutOutlined
         /></a-button>
+      </div>
+      <div class="flex gap-2" v-else>
+        <a-button type="primary" @click="$router.push('/login')"
+          >Login</a-button
+        >
+        <a-button @click="$router.push('/register')">Register</a-button>
       </div>
     </div>
   </div>

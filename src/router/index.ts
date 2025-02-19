@@ -1,5 +1,5 @@
+import { HomeView, LoginView, RegistrationView } from '@/views'
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,6 +9,17 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegistrationView,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+    },
+
   ],
 })
 
