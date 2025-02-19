@@ -17,6 +17,7 @@ export const useAuthStore = defineStore("auth", () => {
         try {
             const user = await ACCOUNT.create("unique()", email, password, name);
             userData.value = user; // ✅ `values` emas, `value` ishlatish kerak
+            await login(email, password)
             router.push("/");
             return user;
         } catch (error) {
