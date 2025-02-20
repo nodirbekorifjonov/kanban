@@ -3,9 +3,14 @@ import { RouterView } from "vue-router";
 import { Aside, Header } from "./components";
 import { useAuthStore } from "./stores/auth";
 import { onMounted } from "vue";
+import { useColumnsStore } from "./stores/columns";
+
+const columnsStore = useColumnsStore();
 
 onMounted(() => {
   useAuthStore().getUser();
+  columnsStore.columns = [];
+  columnsStore.fetchColumns();
 });
 </script>
 

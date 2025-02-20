@@ -42,9 +42,7 @@ function onDrop(targetColumnIndex: number) {
   }
 }
 
-onMounted(() => {
-  columnsStore.fetchColumns();
-});
+
 </script>
 
 <template>
@@ -68,6 +66,7 @@ onMounted(() => {
         </span>
         <h3 class="font-plusjakarta-bold">{{ column.title }}</h3>
         <a-button
+          @click="tasksStore.handleCreate()"
           type="primary"
           shape="circle"
           class="text-white! flex! justify-center! items-center! text-lg! bg-transparent! shadow-none! ml-auto"
