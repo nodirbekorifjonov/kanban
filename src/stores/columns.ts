@@ -16,6 +16,7 @@ export const useColumnsStore = defineStore('columns', () => {
                 title: column.title,
                 tasks: column.tasks || [],
                 color: column.color || "#f8fafc",
+                creator: column.creator,
             }));
         } catch (error) {
             console.log(error);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PlusOutlined, MoreOutlined } from "@ant-design/icons-vue";
-import { h, onMounted, ref } from "vue";
+import { h, ref, watch } from "vue";
 import type { Task } from "@/types/task";
 
 import { useColumnsStore } from "@/stores/columns";
@@ -42,7 +42,12 @@ function onDrop(targetColumnIndex: number) {
   }
 }
 
-
+watch(
+  () => tasksStore.newTask,
+  () => {
+    columnsStore.fetchColumns();
+  }
+);
 </script>
 
 <template>
@@ -66,7 +71,7 @@ function onDrop(targetColumnIndex: number) {
         </span>
         <h3 class="font-plusjakarta-bold">{{ column.title }}</h3>
         <a-button
-          @click="tasksStore.handleCreate()"
+          @click="tasksStore.handleCreate(column.$id)"
           type="primary"
           shape="circle"
           class="text-white! flex! justify-center! items-center! text-lg! bg-transparent! shadow-none! ml-auto"
@@ -90,7 +95,7 @@ function onDrop(targetColumnIndex: number) {
           >
             {{ task.importance }}
           </span>
-          <a-tooltip title="More">
+          <a-tooltip title="More" @click="tasksStore.deleteTask(task.$id)">
             <a-button
               shape="circle"
               :icon="h(MoreOutlined)"

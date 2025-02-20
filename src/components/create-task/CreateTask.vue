@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { ref, reactive, toRaw } from "vue";
+import { reactive, toRaw } from "vue";
 import { useTasksStore } from "@/stores/tasks";
+import { useAuthStore } from "@/stores/auth";
 
 const taskStore = useTasksStore();
 
 interface FormState {
-  name: string;
-  desc: string;
+  title: string;
+  description: string;
   importance: string;
 }
 const formState = reactive<FormState>({
-  name: "",
-  desc: "",
+  title: "",
+  description: "",
   importance: "",
 });
 const onSubmit = () => {
   console.log("submit!", toRaw(formState));
+  taskStore.createTask(
+    formState.title,
+    formState.description,
+    formState.importance,
+  );
   taskStore.hideCreateModal();
-  formState.name = "";
-  formState.desc = "";
+  formState.title = "";
+  formState.description = "";
   formState.importance = "";
 };
 const labelCol = { style: { width: "150px" } };
@@ -29,15 +35,15 @@ const wrapperCol = { span: 14 };
   <a-modal
     v-model:open="taskStore.createModal"
     title="Create Task"
-    @ok="taskStore.hideCreateModal()"
+    @ok="onSubmit"
   >
     <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item label="Title">
-        <a-input v-model:value="formState.name" />
+        <a-input v-model:value="formState.title" />
       </a-form-item>
 
       <a-form-item label="Description">
-        <a-textarea v-model:value="formState.desc" />
+        <a-textarea v-model:value="formState.description" />
       </a-form-item>
 
       <a-form-item label="Importance">
@@ -50,22 +56,20 @@ const wrapperCol = { span: 14 };
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
         <a-button
           :disabled="
-            formState.name == '' ||
-            formState.desc == '' ||
+            formState.title == '' ||
+            formState.description == '' ||
             formState.importance == ''
           "
           type="primary"
           @click="onSubmit"
           >Create</a-button
         >
-        <a-button style="margin-left: 10px">Cancel</a-button>
+        <a-button style="margin-left: 10px" @click="taskStore.hideCreateModal()"
+          >Cancel</a-button
+        >
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
-<style>
-.ant-modal .ant-modal-footer {
-  display: none !important;
-}
-</style>
+<style></style>

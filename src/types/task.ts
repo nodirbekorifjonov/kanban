@@ -3,5 +3,6 @@ export interface Task {
     title: string;
     description: string;
     importance: string;
-    columns: string
+    columns: string;
+    creator: string
 }

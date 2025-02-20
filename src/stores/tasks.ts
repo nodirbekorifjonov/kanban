@@ -1,17 +1,22 @@
 import { DATABASE_ID, TASKS } from "@/constants";
-import { DATABASE } from "@/libs/appwrite";
+import { DATABASE, UNIQUE_ID } from "@/libs/appwrite";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useTasksStore = defineStore('tasks', () => {
     const createModal = ref<boolean>(false)
+    const columnId = ref<string | null>(null)
+    const newTask = ref<object | null>(null)
 
     function hideCreateModal(): void {
         createModal.value = false
     }
 
-    function handleCreate(): void {
+    function handleCreate(id: string): void {
         createModal.value = true
+        columnId.value = id
+        console.log(columnId.value);
+
     }
 
     async function updateTaskColumn(taskId: string, newColumnId: string): Promise<void> {
@@ -24,5 +29,30 @@ export const useTasksStore = defineStore('tasks', () => {
         }
     }
 
-    return { updateTaskColumn, createModal, hideCreateModal, handleCreate }
+    async function createTask(title: string, description: string, importance: string): Promise<void> {
+        try {
+            newTask.value = null
+            const task = await DATABASE.createDocument(DATABASE_ID, TASKS, UNIQUE_ID.unique(), {
+                title,
+                description,
+                importance,
+                columns: columnId.value
+            })
+
+            newTask.value = task
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function deleteTask(documentId: string) {
+        try {
+            await DATABASE.deleteDocument(DATABASE_ID, TASKS, documentId)
+            newTask.value = null
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    return { updateTaskColumn, createModal, hideCreateModal, handleCreate, createTask, newTask, deleteTask }
 })
