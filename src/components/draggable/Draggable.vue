@@ -4,12 +4,10 @@ import { h, onMounted, ref } from "vue";
 import type { Task } from "@/types/task";
 
 import { useColumnsStore } from "@/stores/columns";
+import { useTasksStore } from "@/stores/tasks";
 
 const columnsStore = useColumnsStore();
-
-// onMounted(() => {
-//   getData();
-// });
+const tasksStore = useTasksStore();
 
 let draggedTask = ref<Task | null>(null);
 let draggedColumnIndex = ref<number | null>(null);
@@ -31,7 +29,13 @@ function onDrop(targetColumnIndex: number) {
       draggedTaskIndex.value,
       1
     );
-    // columnsStore.columns[targetColumnIndex].tasks.push(draggedTask.value);
+
+    columnsStore.columns[targetColumnIndex].tasks.push(draggedTask.value);
+    tasksStore.updateTaskColumn(
+      draggedTask.value.$id,
+      columnsStore.columns[targetColumnIndex].$id
+    );
+
     draggedTask.value = null;
     draggedColumnIndex.value = null;
     draggedTaskIndex.value = null;
