@@ -16,6 +16,8 @@ import { RouterLink } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 import { useAsideStore } from "@/stores/aside";
+import { onMounted, ref, watch } from "vue";
+import type { User } from "@/types/user";
 
 const asideStore = useAsideStore();
 const authStore = useAuthStore();
@@ -65,6 +67,8 @@ const menuData = [
   },
 ];
 
+const user = ref<User | null>(null);
+
 window.addEventListener("keydown", (e) => {
   if (e.key === "Control" && e.shiftKey) {
     asideStore.showAside = !asideStore.showAside;
@@ -74,6 +78,17 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("resize", () => {
   asideStore.showAside = window.innerWidth > 768;
 });
+
+onMounted(() => {
+  user.value = JSON.parse(localStorage.getItem("user") || "null");
+});
+
+watch(
+  () => authStore.userData,
+  () => {
+    user.value = JSON.parse(localStorage.getItem("user") || "null");
+  }
+);
 </script>
 
 <template>
@@ -81,7 +96,7 @@ window.addEventListener("resize", () => {
     class="w-[312px] py-8 px-4 flex flex-col justify-between h-screen overflow-y-auto gap-[52px] bg-[#fff] border-r border-[#E2E8F0] transition"
     :class="
       !asideStore.showAside &&
-      'max-[768px]:translate-x-[100%] max-[768px]:opacity-0'
+      'max-[768px]:translate-x-[100%] max-[768px]:opacity-0 max-[768px]:invisible'
     "
   >
     <div class="flex flex-col gap-8">
@@ -143,7 +158,7 @@ window.addEventListener("resize", () => {
         </div>
       </div>
       <div
-        v-if="authStore.userData"
+        v-if="user"
         class="flex items-center gap-3 border-t pt-6 border-[#E2E8F0]"
       >
         <a-avatar class="flex! justify-center! items-center!">
@@ -151,10 +166,10 @@ window.addEventListener("resize", () => {
         </a-avatar>
         <div class="">
           <h4 class="font-plusjakarta-bold text-[#1E293B]!">
-            {{ authStore.userData.name }}
+            {{ user.name }}
           </h4>
           <p class="font-plusjakarta-semibold text-sm text-[#475569]">
-            {{ authStore.userData.email }}
+            {{ user.email }}
           </p>
         </div>
         <a-button

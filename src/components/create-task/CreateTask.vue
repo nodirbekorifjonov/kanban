@@ -4,6 +4,7 @@ import { useTasksStore } from "@/stores/tasks";
 import { useAuthStore } from "@/stores/auth";
 
 const taskStore = useTasksStore();
+const authStore = useAuthStore();
 
 interface FormState {
   title: string;
@@ -20,7 +21,8 @@ const onSubmit = () => {
   taskStore.createTask(
     formState.title,
     formState.description,
-    formState.importance,
+    formState.importance
+    // authStore.userData?.$id
   );
   taskStore.hideCreateModal();
   formState.title = "";

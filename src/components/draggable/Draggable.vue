@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { PlusOutlined, MoreOutlined } from "@ant-design/icons-vue";
-import { h, ref, watch } from "vue";
+import { h, onMounted, ref, watch, reactive } from "vue";
 import type { Task } from "@/types/task";
 
 import { useColumnsStore } from "@/stores/columns";
 import { useTasksStore } from "@/stores/tasks";
+import { useAuthStore } from "@/stores/auth";
+import type { User } from "@/types/user";
 
 const columnsStore = useColumnsStore();
 const tasksStore = useTasksStore();
@@ -42,12 +44,41 @@ function onDrop(targetColumnIndex: number) {
   }
 }
 
+interface FormState {
+  title: string;
+  color: string;
+}
+
+const formState = reactive<FormState>({
+  title: "",
+  color: "#FFB200",
+});
+
 watch(
   () => tasksStore.newTask,
   () => {
     columnsStore.fetchColumns();
   }
 );
+
+watch(
+  () => useAuthStore().userData,
+  () => {
+    columnsStore.fetchColumns();
+  }
+);
+
+const user = ref<User | null>(null);
+watch(
+  () => useAuthStore().userData,
+  () => {
+    user.value = JSON.parse(localStorage.getItem("user") || "null");
+  }
+);
+
+// onMounted(async () => {
+//   await useAuthStore().getUser();
+// });
 </script>
 
 <template>
@@ -55,9 +86,10 @@ watch(
     <div
       v-for="(column, columnIndex) in columnsStore.columns"
       :key="column.$id"
-      class="w-[344px] p-3 bg-[#f8fafc] rounded-4xl shrink-0 flex flex-col gap-4"
+      class="w-[344px] p-3 bg-[#f8fafc] rounded-4xl shrink-0 flex flex-col gap-4 cursor-pointer"
       @dragover.prevent
       @drop="onDrop(columnIndex)"
+      @dblclick="columnsStore.deleteColumns(column.$id)"
     >
       <div
         class="text-[#fff] rounded-full py-2 px-3 flex items-center gap-2"
@@ -106,6 +138,42 @@ watch(
         <h5 class="font-plusjakarta-bold mb-1.5">{{ task.title }}</h5>
         <p class="mb-4 text-[#475569]">{{ task.description }}</p>
       </div>
+    </div>
+    <div
+      class="w-[344px] p-6 bg-[#f8fafc] rounded-4xl shrink-0 flex flex-col gap-4"
+    >
+      <a-form
+        @submit.prevent="
+          columnsStore.createColumn(
+            formState.title,
+            formState.color,
+            user?.$id as string
+          )
+        "
+        :model="formState"
+        name="basic"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 100 }"
+        autocomplete="off"
+        class="flex! flex-col! items-center! w-full!"
+      >
+        <a-form-item
+          name="title"
+          class="w-full!"
+          :rules="[{ required: true, message: 'Please input column title!' }]"
+        >
+          <a-input
+            v-model:value="formState.title"
+            class="w-full! py-2! rounded-3xl!"
+            placeholder="Column title"
+          />
+          <input type="color" name="" id="" v-model="formState.color" />
+        </a-form-item>
+
+        <a-form-item :wrapper-col="{ offset: 0, span: 16 }" class="m-0!">
+          <a-button type="primary" html-type="submit">Create</a-button>
+        </a-form-item>
+      </a-form>
     </div>
   </div>
 </template>

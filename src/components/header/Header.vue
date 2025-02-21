@@ -84,11 +84,11 @@ const navData = [
     </div>
     <div class="pt-8">
       <nav>
-        <ul class="flex">
-          <li v-for="nav in navData">
+        <ul class="flex overflow-x-scroll">
+          <li v-for="nav in navData" class="shrink-0">
             <RouterLink
               to="#"
-              class="tracking-[-0.7%] font-plusjakarta-bold px-4 py-[13px] border-b-2 border-[#CBD5E1] text-[#475569]"
+              class="tracking-[-0.7%] block font-plusjakarta-bold px-4 py-[13px] border-b-2 border-[#CBD5E1] text-[#475569]"
               :class="nav.active && 'text-[#1E293B]! border-[#4F46E5]!'"
               >{{ nav.title }}
               <span

@@ -5,4 +5,5 @@ export interface Column {
     title: string;
     tasks: Task[];
     color: string;
+    order: number | string
 }

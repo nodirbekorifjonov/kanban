@@ -7,6 +7,7 @@ export const useTasksStore = defineStore('tasks', () => {
     const createModal = ref<boolean>(false)
     const columnId = ref<string | null>(null)
     const newTask = ref<object | null>(null)
+    // const userId = ref<string | null>(null)
 
     function hideCreateModal(): void {
         createModal.value = false
@@ -36,7 +37,7 @@ export const useTasksStore = defineStore('tasks', () => {
                 title,
                 description,
                 importance,
-                columns: columnId.value
+                columns: columnId.value,
             })
 
             newTask.value = task
