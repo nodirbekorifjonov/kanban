@@ -2,6 +2,7 @@ import { DATABASE_ID, TASKS } from "@/constants";
 import { DATABASE, UNIQUE_ID } from "@/libs/appwrite";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { useColumnsStore } from "./columns";
 
 export const useTasksStore = defineStore('tasks', () => {
     const createModal = ref<boolean>(false)
@@ -50,10 +51,15 @@ export const useTasksStore = defineStore('tasks', () => {
         try {
             await DATABASE.deleteDocument(DATABASE_ID, TASKS, documentId)
             newTask.value = null
+            useColumnsStore().fetchColumns()
         } catch (error) {
             console.log(error);
         }
     }
+
+    // async function fetchTasks() {
+    //     await DATABASE.listDocuments(DATABASE_ID, TASKS, )
+    // }
 
     return { updateTaskColumn, createModal, hideCreateModal, handleCreate, createTask, newTask, deleteTask }
 })

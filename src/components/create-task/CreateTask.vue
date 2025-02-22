@@ -14,10 +14,9 @@ interface FormState {
 const formState = reactive<FormState>({
   title: "",
   description: "",
-  importance: "",
+  importance: "unimportant",
 });
 const onSubmit = () => {
-  console.log("submit!", toRaw(formState));
   taskStore.createTask(
     formState.title,
     formState.description,
@@ -27,7 +26,7 @@ const onSubmit = () => {
   taskStore.hideCreateModal();
   formState.title = "";
   formState.description = "";
-  formState.importance = "";
+  formState.importance = "unimportant";
 };
 const labelCol = { style: { width: "150px" } };
 const wrapperCol = { span: 14 };

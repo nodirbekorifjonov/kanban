@@ -7,20 +7,21 @@ import { Query } from 'appwrite';
 
 export const useColumnsStore = defineStore('columns', () => {
     let columns = ref<Column[]>([]);
-    const newColumn = ref<Column[] | null>(null)
     const user_id = ref<string | null>(null);
 
     async function fetchColumns() {
+        const userData = await JSON.parse(localStorage.getItem('user') || 'null');
+        user_id.value = userData.$id;
         try {
-            const userData = JSON.parse(localStorage.getItem('user') || 'null');
-            user_id.value = userData.$id;
 
             const { documents } = await DATABASE.listDocuments(DATABASE_ID, COLUMNS, [
                 Query.equal('user_id', user_id.value as string)
             ]);
 
             if (documents && documents.length) {
-                columns.value = documents.sort((a, b) => a.order - b.order) as any[]
+                columns.value = documents.sort((a, b) => a.order - b.order) as any[];
+            } else {
+                columns.value = [];
             }
         } catch (error) {
             console.log(error);
@@ -29,16 +30,12 @@ export const useColumnsStore = defineStore('columns', () => {
 
     async function createColumn(title: string, color: string, userId: string) {
         try {
-            const col = await DATABASE.createDocument(DATABASE_ID, COLUMNS, UNIQUE_ID.unique(), {
+            const response = await DATABASE.createDocument(DATABASE_ID, COLUMNS, UNIQUE_ID.unique(), {
                 title: title,
                 color: color,
                 user_id: userId
             })
-
             await fetchColumns()
-
-            console.log(col);
-
         } catch (error) {
             console.log(error);
 
@@ -47,8 +44,10 @@ export const useColumnsStore = defineStore('columns', () => {
 
     async function deleteColumns(colId: string) {
         try {
-            await DATABASE.deleteDocument(DATABASE_ID, COLUMNS, colId)
-            fetchColumns()
+            const response = await DATABASE.deleteDocument(DATABASE_ID, COLUMNS, colId)
+            if (response) {
+                await fetchColumns()
+            }
         } catch (error) {
             console.log(error);
 
