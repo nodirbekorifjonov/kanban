@@ -59,9 +59,12 @@ watch(
   }
 );
 
-// onMounted(async () => {
-//   await useAuthStore().getUser();
-// });
+watch(
+  () => useAuthStore().userData,
+  () => {
+    user.value = JSON.parse(localStorage.getItem("user") || "null");
+  }
+);
 </script>
 
 <template>

@@ -21,7 +21,7 @@ const formState = reactive<FormState>({
 
 <template>
   <section
-    class="fixed top-0 left-0 bottom-0 z-50 bg-white w-screen h-screen flex flex-col justify-center items-center"
+    class="bg-white w-screen h-screen flex flex-col justify-center items-center"
   >
     <h1 class="mb-8 text-2xl">Register</h1>
     <a-form

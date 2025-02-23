@@ -38,7 +38,7 @@ export const useColumnsStore = defineStore('columns', () => {
             await fetchColumns()
         } catch (error) {
             console.log(error);
-
+            alert("Saytimizdan foydalanishingiz uchun ro'yhatdan o'tishingiz zarur")
         }
     }
 

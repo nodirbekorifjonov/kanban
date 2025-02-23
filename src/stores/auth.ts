@@ -28,7 +28,6 @@ export const useAuthStore = defineStore("auth", () => {
         try {
             await ACCOUNT.createEmailPasswordSession(email, password);
             await getUser();
-            router.push({ name: 'home' });
         } catch (error) {
             console.log("Login xatolik:", error);
         }
@@ -39,6 +38,8 @@ export const useAuthStore = defineStore("auth", () => {
             const user = await ACCOUNT.get();
             localStorage.setItem("user", JSON.stringify(user));
             userData.value = user;
+            router.push({ name: 'home' });
+
             await useColumnsStore().fetchColumns();
         } catch (error) {
             console.error("Foydalanuvchini olishda xatolik:", error);
@@ -53,7 +54,7 @@ export const useAuthStore = defineStore("auth", () => {
             await ACCOUNT.deleteSession("current");
             localStorage.removeItem("user");
             userData.value = null;
-            useColumnsStore().columns = []; // fetchColumns chaqirmasdan, to‘g‘ridan-to‘g‘ri bo‘sh qilish
+            useColumnsStore().columns = [];
             router.push({ name: "login" });
         } catch (error) {
             console.error("Chiqishda xatolik:", error);
